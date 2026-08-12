@@ -1,9 +1,12 @@
 """Object storage abstraction.
 
 The rest of the application talks to a StorageClient and never touches boto3
-or the filesystem directly. Two implementations exist: S3 for deployment and
-a local directory for development without cloud credentials. Swapping between
-them is a config change, not a code change.
+or the filesystem directly. Two implementations exist: an S3 client for
+deployment and a local directory for development without credentials.
+Swapping between them is a config change, not a code change.
+
+The S3 client is written against the AWS S3 API. Setting S3_ENDPOINT_URL
+points it at any S3-compatible provider; leaving it unset targets AWS itself.
 """
 
 import json
@@ -42,8 +45,11 @@ class S3Storage(StorageClient):
         import boto3
 
         self.bucket = settings.S3_BUCKET
+        # endpoint_url is None for AWS S3 and set for any S3-compatible
+        # provider. Everything below this line is the same API either way.
         self.client = boto3.client(
             "s3",
+            endpoint_url=settings.S3_ENDPOINT_URL,
             aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
             aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
             region_name=settings.AWS_REGION,
@@ -59,10 +65,9 @@ class S3Storage(StorageClient):
         return key
 
     def list_files(self, limit: int = 200) -> List[Dict[str, Any]]:
-        # list_objects_v2 with MaxKeys asks S3 for only what we need rather
-        # than paginating the whole bucket and trimming client-side.
+        # MaxKeys asks the service for only what we need rather than
+        # paginating the whole bucket and trimming client-side.
         response = self.client.list_objects_v2(Bucket=self.bucket, MaxKeys=limit)
-        objects = response.get("Contents", [])
 
         files = [
             {
@@ -70,7 +75,8 @@ class S3Storage(StorageClient):
                 "size": obj["Size"],
                 "created_at": obj["LastModified"].astimezone(timezone.utc).isoformat(),
             }
-            for obj in objects
+            for obj in response.get("Contents", [])
+            if obj["Key"].endswith(".json")
         ]
         files.sort(key=lambda f: f["created_at"], reverse=True)
         return files
@@ -81,7 +87,8 @@ class S3Storage(StorageClient):
         try:
             response = self.client.get_object(Bucket=self.bucket, Key=key)
         except ClientError as exc:
-            if exc.response["Error"]["Code"] in ("NoSuchKey", "404"):
+            code = exc.response["Error"]["Code"]
+            if code in ("NoSuchKey", "404", "NotFound"):
                 raise FileNotFound(key) from exc
             raise StorageError(str(exc)) from exc
 

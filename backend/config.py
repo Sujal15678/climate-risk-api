@@ -1,9 +1,9 @@
 """Runtime configuration.
 
 The storage backend is selected by which environment variables are present:
-if an S3 bucket and credentials are configured we use S3, otherwise we fall
-back to the local filesystem. This lets the same code run unchanged locally
-and in the cloud.
+with a bucket and credentials the app uses S3, otherwise it falls back to the
+local filesystem. S3_ENDPOINT_URL points boto3 at an S3-compatible provider;
+leaving it unset targets AWS S3 itself.
 """
 
 import os
@@ -17,6 +17,7 @@ class Settings:
     AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
     AWS_REGION = os.getenv("AWS_REGION", "ap-south-1")
     S3_BUCKET = os.getenv("S3_BUCKET")
+    S3_ENDPOINT_URL = os.getenv("S3_ENDPOINT_URL")  # unset for AWS S3
 
     LOCAL_STORAGE_DIR = os.getenv("LOCAL_STORAGE_DIR", "./data")
 

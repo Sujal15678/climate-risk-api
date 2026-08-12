@@ -1,58 +1,226 @@
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
 
+:root {
+  --bg:      #09090b;
+  --surface: #111114;
+  --card:    rgba(18, 18, 24, 0.75);
+  --border:  rgba(168, 85, 247, 0.15);
+  --ink:     #f0eef6;
+  --muted:   #8b8696;
+  --faint:   #5a5468;
+  --neon:    #a855f7;         /* main purple */
+  --neon-bright: #c084fc;    /* lighter purple for text */
+  --neon-dim:    #7c3aed;    /* deeper purple */
+  --warm:    #fb923c;         /* orange for max temps */
+  --cool:    #818cf8;         /* indigo for min temps */
+  --glow:    0 0 20px rgba(168, 85, 247, 0.35);
+  --glow-sm: 0 0 10px rgba(168, 85, 247, 0.2);
+  --glow-lg: 0 0 40px rgba(168, 85, 247, 0.25), 0 0 80px rgba(168, 85, 247, 0.1);
+}
+
+/* ── base ─────────────────────────────────────── */
 html,
 body {
-  background: #0B1119;
-  color: #E4EBF2;
-  font-family: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Inter Tight', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
+  letter-spacing: -0.011em;
+}
+
+/* subtle dot grid on background */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(168, 85, 247, 0.06) 1px, transparent 0);
+  background-size: 32px 32px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── typography ───────────────────────────────── */
+.display {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #c084fc, #a855f7, #7c3aed, #c084fc);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 6s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
 }
 
 .mono {
-  font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, monospace;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
   font-variant-numeric: tabular-nums;
 }
 
-input[type='range'] {
-  -webkit-appearance: none;
-  appearance: none;
-  height: 2px;
-  background: #1F2B3A;
-  border-radius: 2px;
+.eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--neon-bright);
+}
+
+/* ── card (glassmorphism) ─────────────────────── */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+  border-color: rgba(168, 85, 247, 0.3);
+}
+
+/* ── fields ───────────────────────────────────── */
+.field {
+  width: 100%;
+  background: rgba(14, 14, 20, 0.7);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.6rem 0.85rem;
+  font-size: 0.875rem;
+  color: var(--ink);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.field::placeholder {
+  color: var(--faint);
+}
+
+.field:focus {
   outline: none;
+  border-color: var(--neon);
+  box-shadow: var(--glow-sm), inset 0 0 12px rgba(168, 85, 247, 0.05);
 }
 
-input[type='range']::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: #4EA8DE;
-  cursor: pointer;
-  border: 3px solid #0B1119;
-  box-shadow: 0 0 0 1px #4EA8DE;
+/* ── buttons ──────────────────────────────────── */
+.btn-primary {
+  background: linear-gradient(135deg, var(--neon-dim), var(--neon));
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 0.65rem 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  box-shadow: var(--glow);
+  transition: transform 0.15s, box-shadow 0.25s, opacity 0.15s;
+  position: relative;
+  overflow: hidden;
 }
 
-input[type='range']::-moz-range-thumb {
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: #4EA8DE;
-  cursor: pointer;
-  border: 3px solid #0B1119;
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent 30%, rgba(255,255,255,0.12) 50%, transparent 70%);
+  transform: translateX(-100%);
+  transition: transform 0.5s;
 }
 
-select:focus-visible,
-input:focus-visible {
-  outline: 1px solid #4EA8DE;
+.btn-primary:hover:not(:disabled)::before {
+  transform: translateX(100%);
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: var(--glow-lg);
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn-primary:disabled {
+  opacity: 0.35;
+  box-shadow: none;
+}
+
+.btn-ghost {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.65rem 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--neon-bright);
+  background: transparent;
+  transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+
+.btn-ghost:hover:not(:disabled) {
+  background: rgba(168, 85, 247, 0.08);
+  border-color: rgba(168, 85, 247, 0.35);
+  box-shadow: var(--glow-sm);
+}
+
+.btn-ghost:disabled {
+  opacity: 0.3;
+}
+
+/* ── focus ring ───────────────────────────────── */
+button:focus-visible,
+.field:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--neon);
   outline-offset: 2px;
 }
 
+/* ── scrollbar (webkit) ───────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(168, 85, 247, 0.2);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(168, 85, 247, 0.4);
+}
+
+/* ── select dropdown ──────────────────────────── */
+select {
+  background: rgba(14, 14, 20, 0.8);
+  color: var(--ink);
+  border: 1px solid var(--border);
+}
+
+select option {
+  background: #111114;
+  color: var(--ink);
+}
+
+/* ── reduced motion ───────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   * {
-    animation: none !important;
     transition: none !important;
+    animation: none !important;
   }
+}
+
+/* ── glow pulse animation (reusable) ──────────── */
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 15px rgba(168, 85, 247, 0.2); }
+  50% { box-shadow: 0 0 30px rgba(168, 85, 247, 0.4), 0 0 60px rgba(168, 85, 247, 0.15); }
+}
+
+.glow-pulse {
+  animation: glow-pulse 3s ease-in-out infinite;
 }
