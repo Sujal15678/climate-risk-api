@@ -5,7 +5,6 @@ const nextConfig: NextConfig = {
   // response shapes is not worth the effort on a project this size, and the
   // runtime behaviour is covered by the backend's own tests.
   typescript: { ignoreBuildErrors: true },
-  eslint: { ignoreDuringBuilds: true },
 };
 
 export default nextConfig;

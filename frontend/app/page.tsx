@@ -6,15 +6,15 @@ import {
   Tooltip, ResponsiveContainer,
 } from 'recharts';
 
-const API = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
+const API = process.env.NEXT_PUBLIC_API_URL || 'https://climate-risk-api-1.onrender.com';
 
 /* ── neon palette ─────────────────────────────── */
-const WARM    = '#fb923c';            // orange — max temps
-const COOL    = '#818cf8';            // indigo — min temps
-const NEON    = '#a855f7';            // purple accent
+const WARM = '#fb923c';            // orange — max temps
+const COOL = '#818cf8';            // indigo — min temps
+const NEON = '#a855f7';            // purple accent
 const NEON_BR = '#c084fc';            // lighter purple
-const BORDER  = 'rgba(168,85,247,0.15)';
-const MUTED   = '#8b8696';
+const BORDER = 'rgba(168,85,247,0.15)';
+const MUTED = '#8b8696';
 const SURFACE = 'rgba(18,18,24,0.75)';
 
 const COLUMNS = [
