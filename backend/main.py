@@ -41,3 +41,18 @@ def root():
 def health():
     """Liveness probe for the hosting platform."""
     return {"status": "ok"}
+
+
+@app.get("/debug-env")
+def debug_env():
+    """Temporary: check which storage env vars Render sees. Remove after debugging."""
+    import os
+    bucket = os.getenv("S3_BUCKET")
+    key_id = os.getenv("AWS_ACCESS_KEY_ID")
+    endpoint = os.getenv("S3_ENDPOINT_URL")
+    return {
+        "S3_BUCKET": bucket if bucket else None,
+        "AWS_ACCESS_KEY_ID": f"{key_id[:6]}..." if key_id else None,
+        "S3_ENDPOINT_URL": endpoint if endpoint else None,
+        "use_s3": bool(bucket and key_id),
+    }
